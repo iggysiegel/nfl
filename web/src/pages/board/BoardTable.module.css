@@ -1,0 +1,27 @@
+.table { width: 100%; min-width: 720px; border-collapse: collapse }
+
+.head {
+  composes: label from global;
+  padding: 10px var(--sp-6);
+  border-bottom: var(--border-w) solid var(--border-strong);
+  text-align: right;
+}
+.game { composes: head; text-align: left }
+.confidence { composes: head; width: 132px }
+
+/* Column headings have a long and a short form; only one is ever shown. */
+.short { display: none }
+
+@media (max-width: 640px) {
+  /* Nothing is dropped below this width, so the table can shrink to the viewport. */
+  .table { min-width: 0 }
+  .head { padding: 10px }
+  .disagreement { display: none }
+  .confidence { width: auto }
+}
+
+@media (max-width: 380px) {
+  .head { padding: 10px var(--sp-4) }
+  .long { display: none }
+  .short { display: inline }
+}

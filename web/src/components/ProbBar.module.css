@@ -1,0 +1,15 @@
+/* Track height is a custom property so a caller can set it from its own stylesheet
+   without depending on which module's CSS the bundler emits first. */
+.track {
+  display: block;
+  position: relative;
+  height: var(--prob-bar-h, 8px);
+  background: var(--bg-inset);
+  border-radius: var(--r-1);
+  overflow: hidden;
+}
+.fill { display: block; height: 100%; transition: width var(--dur-3) var(--ease-out) }
+.accent { background: var(--accent) }
+.neutral { background: var(--text-muted) }
+/* The centre tick, so a value's distance from even reads at a glance. */
+.tick { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--border-strong) }

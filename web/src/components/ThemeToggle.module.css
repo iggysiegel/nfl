@@ -1,0 +1,16 @@
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--control-h);
+  height: var(--control-h);
+  padding: 0;
+  border: var(--border-w) solid transparent;
+  border-radius: var(--r-control);
+  background: transparent;
+  color: var(--text-body);
+  cursor: pointer;
+  transition: var(--t-hover);
+}
+.toggle:hover { background: var(--bg-hover) }
+.glyph { display: block }

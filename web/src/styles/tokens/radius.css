@@ -1,0 +1,8 @@
+:root{
+  --r-0:0px;--r-1:2px;--r-2:4px;--r-3:6px;--r-4:10px;--r-pill:999px;
+  --r-control:var(--r-2);
+  --r-card:var(--r-3);
+  --r-sheet:var(--r-4);
+  --border-w:1px;
+  --border-w-thick:2px;
+}

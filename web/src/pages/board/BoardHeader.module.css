@@ -1,0 +1,18 @@
+.title {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-6);
+  flex-wrap: wrap;
+}
+.week { margin: 0; font: var(--type-h1); letter-spacing: var(--ls-display); color: var(--text-strong) }
+.updated { font: var(--type-num-sm); color: var(--text-faint); white-space: nowrap }
+
+.stats {
+  display: flex;
+  gap: var(--sp-10);
+  flex-wrap: wrap;
+  padding: var(--sp-6) 0;
+  border-top: var(--border-w) solid var(--border-hairline);
+  border-bottom: var(--border-w) solid var(--border-hairline);
+}

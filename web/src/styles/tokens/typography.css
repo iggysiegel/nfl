@@ -1,0 +1,37 @@
+:root{
+  --font-sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --font-display:var(--font-sans);
+  --font-numeric:var(--font-mono);
+
+  --text-11:11px;--text-12:12px;--text-13:13px;--text-14:14px;--text-16:16px;
+  --text-18:18px;--text-22:22px;--text-28:28px;--text-36:36px;--text-48:48px;
+
+  --lh-tight:1.1;
+  --lh-snug:1.25;
+  --lh-normal:1.45;
+  --lh-loose:1.6;
+
+  --ls-display:-0.02em;
+  --ls-tight:-0.01em;
+  --ls-normal:0;
+  --ls-label:0.08em;
+  --ls-mono:-0.01em;
+
+  --fw-regular:400;
+  --fw-medium:500;
+  --fw-semibold:600;
+  --fw-bold:700;
+
+  /* composed roles */
+  --type-display:var(--fw-semibold) var(--text-48)/var(--lh-tight) var(--font-display);
+  --type-h1:var(--fw-semibold) var(--text-36)/var(--lh-tight) var(--font-display);
+  --type-h2:var(--fw-semibold) var(--text-22)/var(--lh-snug) var(--font-display);
+  --type-h3:var(--fw-semibold) var(--text-16)/var(--lh-snug) var(--font-sans);
+  --type-body:var(--fw-regular) var(--text-16)/var(--lh-normal) var(--font-sans);
+  --type-body-sm:var(--fw-regular) var(--text-14)/var(--lh-normal) var(--font-sans);
+  --type-label:var(--fw-medium) var(--text-11)/1.2 var(--font-mono);
+  --type-num-lg:var(--fw-medium) var(--text-28)/1.1 var(--font-mono);
+  --type-num:var(--fw-medium) var(--text-14)/1.2 var(--font-mono);
+  --type-num-sm:var(--fw-regular) var(--text-12)/1.2 var(--font-mono);
+}

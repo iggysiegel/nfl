@@ -1,0 +1,10 @@
+.chart { display: block; width: 100% }
+.tick { font-family: var(--font-mono); font-size: 11px; fill: var(--text-faint) }
+.legend {
+  display: flex;
+  gap: var(--sp-6);
+  margin-top: var(--sp-4);
+  font: var(--type-num-sm);
+  color: var(--text-muted);
+}
+.model { color: var(--accent-text) }

@@ -1,0 +1,13 @@
+.numeric {
+  /* The left gutter is what keeps the two side columns apart once the table is
+     squeezed on a small phone; without it they render flush. */
+  padding: var(--sp-4) 0 var(--sp-4) var(--sp-5);
+  text-align: right;
+  font: var(--type-num);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-body);
+  white-space: nowrap;
+}
+.edge { composes: numeric; color: var(--text-strong); padding-left: var(--sp-6) }
+.label { padding: var(--sp-4) 0; font: var(--type-body-sm); color: var(--text-strong) }
+.note { display: block; font: var(--type-num-sm); color: var(--text-faint) }

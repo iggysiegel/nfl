@@ -1,0 +1,17 @@
+/* Overrides this site applies on top of the design system: the sans is Source Sans 3
+   rather than IBM Plex Sans, and the composed type roles are pinned to fixed pixel
+   sizes rather than the token scale.
+   On :root rather than [data-theme] — these do not vary by theme, and keying them on
+   an attribute React sets would leave the first paint in the wrong font. */
+:root{
+  --font-sans:"Source Sans 3",system-ui,sans-serif;
+  --font-display:var(--font-sans);
+  --type-display:600 48px/1.1 var(--font-sans);
+  --type-h1:600 36px/1.1 var(--font-sans);
+  --type-h2:600 22px/1.25 var(--font-sans);
+  --type-h3:600 16px/1.25 var(--font-sans);
+  --type-body:400 16px/1.45 var(--font-sans);
+  --type-body-sm:400 14px/1.45 var(--font-sans);
+}
+a{text-decoration:none}
+a:hover{text-decoration:underline}

@@ -1,0 +1,28 @@
+/* A native <dialog>, so Escape, the focus trap, focus restore, and making the page
+   behind inert are the browser's job rather than ours.
+   The old hand-rolled overlay inset the sheet by one spacing step on every side; the
+   min() below is that same inset, since a modal dialog sizes against the viewport. */
+.dialog {
+  width: 100%;
+  max-width: min(var(--dialog-max, 440px), calc(100% - 2 * var(--sp-6)));
+  padding: 0;
+  border: var(--border-w) solid var(--border-hairline);
+  border-radius: var(--r-sheet);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-3);
+  color: var(--text-body);
+  overflow: hidden;
+}
+.dialog::backdrop { background: var(--overlay) }
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  padding: var(--sp-5) var(--sp-6);
+  border-bottom: var(--border-w) solid var(--border-hairline);
+}
+.title { font: var(--type-h3); color: var(--text-strong); margin: 0 }
+.close { border: 0; background: none; cursor: pointer; color: var(--text-muted); font: var(--text-16); padding: 0 }
+.body { padding: var(--sp-6); font: var(--type-body-sm) }

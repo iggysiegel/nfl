@@ -1,0 +1,37 @@
+.card { composes: card from global; margin: var(--sp-4) 0 0 }
+.table { width: 100%; min-width: 560px; border-collapse: collapse }
+
+.head {
+  composes: label from global;
+  padding: 10px 14px;
+  border-bottom: var(--border-w) solid var(--border-strong);
+  white-space: nowrap;
+  text-align: right;
+}
+.season { composes: head; text-align: left }
+
+.cell {
+  padding: 10px 14px;
+  border-bottom: var(--border-w) solid var(--border-hairline);
+  font: var(--type-num);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-body);
+  white-space: nowrap;
+  text-align: right;
+}
+.year { composes: cell; text-align: left; color: var(--text-strong) }
+/* The cover rate sits quieter than the record it follows, and lifts a step on
+   the all-time row so the summary still reads as the loudest line. */
+.rate { color: var(--text-faint) }
+
+.total {
+  padding: var(--sp-5) 14px;
+  border-top: var(--border-w) solid var(--border-strong);
+  font: var(--fw-semibold) var(--text-14) / 1.2 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-strong);
+  white-space: nowrap;
+  text-align: right;
+}
+.totalLabel { composes: total; text-align: left }
+.total .rate { color: var(--text-muted) }

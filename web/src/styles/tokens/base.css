@@ -1,0 +1,21 @@
+*,*::before,*::after{box-sizing:border-box}
+/* Follows the in-page toggle, so scrollbars and form controls match it. */
+:root[data-theme="light"]{color-scheme:light}
+:root[data-theme="dark"]{color-scheme:dark}
+body{margin:0;background:var(--bg-page);color:var(--text-body);font:var(--type-body);-webkit-font-smoothing:antialiased;text-wrap:pretty}
+h1,h2,h3,h4{color:var(--text-strong);margin:0}
+h1{font:var(--type-h1);letter-spacing:var(--ls-display)}
+h2{font:var(--type-h2);letter-spacing:var(--ls-tight)}
+h3{font:var(--type-h3)}
+p{margin:0}
+a{color:var(--link);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px;transition:var(--t-hover)}
+a:hover{color:var(--link-hover)}
+:focus-visible{outline:none;box-shadow:var(--ring-focus)}
+code,kbd,samp{font-family:var(--font-mono);font-size:.92em}
+table{border-collapse:collapse}
+.label{font:var(--type-label);letter-spacing:var(--ls-label);text-transform:uppercase;color:var(--text-muted)}
+
+/* Shared chrome. Every panel on the site is one of these. */
+.card{background:var(--bg-surface);border:var(--border-w) solid var(--border-hairline);border-radius:var(--r-card);box-shadow:var(--shadow-1);overflow:hidden}
+/* Wide tables scroll inside their card rather than widening the page. */
+.scroll{overflow-x:auto}

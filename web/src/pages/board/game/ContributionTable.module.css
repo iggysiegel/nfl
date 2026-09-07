@@ -1,0 +1,27 @@
+.table { width: 100%; border-collapse: collapse }
+
+.head {
+  composes: label from global;
+  padding: 0 0 var(--sp-4) var(--sp-5);
+  text-align: right;
+  border-bottom: var(--border-w) solid var(--border-hairline);
+  white-space: nowrap;
+}
+.side { composes: head; text-align: left; padding-left: 0 }
+.edgeHead { composes: head; padding-left: var(--sp-6) }
+
+.totalLabel {
+  padding: 10px 0 0;
+  border-top: var(--border-w) solid var(--border-strong);
+  font: var(--fw-medium) var(--text-14) / 1.2 var(--font-sans);
+  color: var(--text-strong);
+}
+.totalValue {
+  composes: totalLabel;
+  text-align: right;
+  padding-left: var(--sp-6);
+  font: var(--type-num);
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-text);
+  white-space: nowrap;
+}

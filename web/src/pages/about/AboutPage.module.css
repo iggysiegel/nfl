@@ -1,0 +1,19 @@
+.page { max-width: var(--max-narrow); margin: 0 auto; padding: var(--sp-10) var(--page-pad) var(--sp-12) }
+.article { display: flex; flex-direction: column; gap: var(--sp-6) }
+
+.article h1 { margin: 0; font: var(--type-h1); letter-spacing: var(--ls-display); color: var(--text-strong) }
+.article h2 { margin: var(--sp-9) 0 0; font: var(--type-h2); letter-spacing: var(--ls-tight); color: var(--text-strong) }
+.article h3 { margin: var(--sp-7) 0 0; font: var(--type-h3); color: var(--text-strong) }
+.article p { margin: 0; font: var(--type-body); color: var(--text-body) }
+
+.chart { composes: card from global; padding: var(--sp-6); margin: var(--sp-4) 0 0 }
+.chartHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-5);
+}
+.chartControls { display: flex; align-items: center; gap: var(--sp-5); flex-wrap: wrap }
+.breakEven { font: var(--type-num-sm); color: var(--text-muted) }

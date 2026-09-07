@@ -1,0 +1,16 @@
+.chart { display: block; width: 100%; height: 240px }
+.axis { stroke: var(--chart-grid); stroke-width: 1 }
+.baseline { stroke: var(--border-strong); stroke-width: 1 }
+.breakEven { stroke: var(--chart-line); stroke-width: 1; stroke-dasharray: 4 3 }
+/* Marks where the betting threshold begins. */
+.divider { stroke: var(--border-strong); stroke-width: 1 }
+
+.text { font-family: var(--font-mono); font-size: 11px }
+.gridLabel { composes: text; fill: var(--text-faint) }
+.bandLabel { composes: text; fill: var(--text-muted) }
+.count { composes: text; fill: var(--text-faint) }
+.betFlag { composes: text; fill: var(--text-muted) }
+.rate { font-family: var(--font-mono); font-size: 12px; fill: var(--text-strong) }
+
+.covers { fill: var(--accent) }
+.misses { fill: var(--text-faint) }

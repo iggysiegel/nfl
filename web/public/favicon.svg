@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <title>A posterior density with a market line through it</title>
+  <path d="M1 27C8 27 8.6 6 16 6s8 21 15 21H1Z" fill="#8cc4a9" fill-opacity=".45"/>
+  <path d="M1 27C8 27 8.6 6 16 6s8 21 15 21" fill="none" stroke="#2f7d5b" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M21.5 3v24" stroke="#6f7672" stroke-width="1.8" stroke-dasharray="3 2.5"/>
+</svg>

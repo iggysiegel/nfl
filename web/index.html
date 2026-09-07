@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/nfl/favicon.svg" type="image/svg+xml" />
+    <title>NFL margin model</title>
+    <meta
+      name="description"
+      content="A Bayesian state-space model for NFL score margins, forecast each week and scored against the market."
+    />
+    <meta name="theme-color" content="#f7f8f7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b0c0b" media="(prefers-color-scheme: dark)" />
+
+    <!-- Runs before the first paint, so a dark-preferring visitor never sees a white
+         frame. React reads the attribute this sets rather than deciding again. -->
+    <script>
+      (() => {
+        let saved = null;
+        try {
+          saved = localStorage.getItem('theme');
+        } catch {
+          /* storage can be blocked; fall back to the OS preference */
+        }
+        const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.dataset.theme = saved ?? (dark ? 'dark' : 'light');
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

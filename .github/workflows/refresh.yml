@@ -1,0 +1,66 @@
+name: Refresh
+
+on:
+  schedule:
+    - cron: "0 12 * * 0,1,3,4,5,6"
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+        working-directory: python
+    env:
+      PREDICTIONS_DIR: ${{ github.workspace }}/data/predictions
+      OMP_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: data
+          path: data
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          environment-file: python/environment.yml
+          activate-environment: nfl
+
+      - name: Fetch the newest posterior
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          run_id=$(gh run list --workflow=fit.yml --status=success --limit=1 \
+            --json databaseId --jq '.[0].databaseId')
+          gh run download "$run_id" --name posterior --dir "$GITHUB_WORKSPACE/models"
+
+      - name: Re-forecast the upcoming week
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          python -m scripts.forecast --reuse-trace --no-progress | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit the archive
+        working-directory: data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add predictions
+          if git diff --staged --quiet; then
+            echo "Nothing changed." >> "$GITHUB_STEP_SUMMARY"
+          else
+            git commit -m "Refresh predictions ($(date -u +%Y-%m-%d))"
+            git push
+          fi
+
+  publish:
+    needs: refresh
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy.yml

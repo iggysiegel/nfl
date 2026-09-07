@@ -1,0 +1,68 @@
+name: Fit
+
+on:
+  schedule:
+    - cron: "0 20 * * 2"
+  workflow_dispatch:
+
+jobs:
+  fit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+        working-directory: python
+    env:
+      PREDICTIONS_DIR: ${{ github.workspace }}/data/predictions
+      OMP_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: data
+          path: data
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          environment-file: python/environment.yml
+          activate-environment: nfl
+
+      - name: Recompute completed weeks
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          python -m scripts.archive | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Forecast the upcoming week
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          python -m scripts.forecast --no-progress | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: posterior
+          path: models/*.nc
+          retention-days: 14
+
+      - name: Commit the archive
+        working-directory: data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add predictions
+          if git diff --staged --quiet; then
+            echo "Nothing changed." >> "$GITHUB_STEP_SUMMARY"
+          else
+            git commit -m "Update predictions ($(date -u +%Y-%m-%d))"
+            git push
+          fi
+
+  publish:
+    needs: fit
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy.yml

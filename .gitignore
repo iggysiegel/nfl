@@ -1,0 +1,31 @@
+# Local development.
+local/
+
+# Model output.
+predictions/
+models/
+
+# Python.
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Web build.
+web/node_modules/
+web/dist/
+web/*.tsbuildinfo
+web/src/data/*.json
+
+# Tooling caches.
+.ruff_cache/
+.pytest_cache/
+
+# Virtual environments.
+.venv/
+env/
+.conda/
+
+# OS / editor cruft.
+.DS_Store
+.ipynb_checkpoints/
+.vscode

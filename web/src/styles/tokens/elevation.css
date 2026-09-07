@@ -1,0 +1,14 @@
+:root{
+  --shadow-none:none;
+  --shadow-1:0 1px 2px rgb(11 12 11 / .06);
+  --shadow-2:0 2px 6px rgb(11 12 11 / .08);
+  --shadow-3:0 8px 24px rgb(11 12 11 / .12);
+  --shadow-inset:inset 0 1px 0 rgb(255 255 255 / .5);
+  --ring-focus:0 0 0 2px var(--bg-surface),0 0 0 4px var(--border-focus);
+}
+[data-theme="dark"]{
+  --shadow-1:0 1px 2px rgb(0 0 0 / .5);
+  --shadow-2:0 2px 6px rgb(0 0 0 / .55);
+  --shadow-3:0 8px 24px rgb(0 0 0 / .6);
+  --shadow-inset:inset 0 1px 0 rgb(255 255 255 / .04);
+}

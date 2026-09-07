@@ -1,0 +1,14 @@
+:root{
+  --ease-out:cubic-bezier(.2,.7,.3,1);
+  --ease-in-out:cubic-bezier(.4,0,.2,1);
+  /* press/hover, state change, enter/exit */
+  --dur-1:90ms;
+  --dur-2:150ms;
+  --dur-3:240ms;
+  --t-hover:background-color var(--dur-1) var(--ease-out),border-color var(--dur-1) var(--ease-out),color var(--dur-1) var(--ease-out);
+}
+@media (prefers-reduced-motion:reduce){:root{
+  --dur-1:0ms;
+  --dur-2:0ms;
+  --dur-3:0ms;
+}}
