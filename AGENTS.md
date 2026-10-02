@@ -17,7 +17,6 @@ ruff check . && ruff format --check .     # lint, must pass
 python -m pytest -q                       # full suite (test_data hits the network)
 python -m pytest -q tests/test_model.py tests/test_predict.py   # offline
 python -m scripts.forecast
-python -m scripts.archive
 python -m scripts.backtest --start-season 2019 --end-season 2025
 ```
 
@@ -37,6 +36,8 @@ npm run lint && npm run test
 - **Never commit.** The maintainer reviews and commits every change.
 - **Build only what is asked.** No scaffolding, no forward-looking abstractions,
   no configuration for things that have one value. When in doubt, write less.
+- **Personal project, not production.** Handle the normal path well. Do not add code
+  for failures that need several unlikely things to go wrong; mention them instead.
 - **Readable over clever.** A few cohesive classes with small named methods, type
   hints, and Google-style docstrings in plain English. Short inline comments; never
   paragraph-long ones. Named constants, no magic numbers.
@@ -84,22 +85,25 @@ npm run lint && npm run test
   holding exactly what `predict_week` emits. It shares no history with `main` and must
   not be merged into it.
 - `.github/workflows/`: `ci.yml` lints and tests both components, `deploy.yml`
-  publishes to Pages, `fit.yml` refits weekly, `refresh.yml` re-predicts daily from
-  the weekly posterior and falls back to a full fit when it is missing or stale.
+  publishes to Pages, `update.yml` runs `scripts.forecast` daily and carries the
+  saved model from run to run as the `model` artifact.
 
 ## Code map
 
 - `python/nfl/data.py` — `DataLoader(start_season, end_season)` joins the schedule,
-  the opening line, and the quarterback ratings into one frame; `upcoming_week()`.
+  the opening line, and the quarterback ratings into one frame; `upcoming_week()`,
+  `previous_week()`.
 - `python/nfl/model.py` — prior constants and `StateSpaceModel`: `build`, `fit`,
   `save`, `load`. Saves keep only the prediction variables and the final week.
 - `python/nfl/predict.py` — `fit_week` (the one fit-and-forecast path every script
   uses), `predict_week` (pure numpy on the posterior; `q01` to `q99` grid), `score`.
 - `python/nfl/report.py` — `Formatter`: terminal table sorted by confidence.
 - `python/nfl/paths.py` — `PREDICTIONS_DIR` and `MODELS_DIR`, each overridden by an
-  environment variable of the same name. The web build reads `PREDICTIONS_DIR` too.
-- `python/scripts/` — `forecast.py` (`--reuse-trace` predicts from a saved posterior
-  instead of refitting), `backtest.py`, `archive.py`.
+  environment variable of the same name, and `model_path` and `predictions_path` for
+  a week's files. The web build reads `PREDICTIONS_DIR` too.
+- `python/scripts/` — `forecast.py` (forecasts the upcoming week and fills in last
+  week's final scores, predicting from a saved model when one exists and fitting
+  otherwise; `--refit` forces a fit), `backtest.py`.
 - `web/build/` reads the prediction CSVs and bakes the JSON the site ships;
   `web/src/` is the React app.
 - `predictions/` and `models/` are gitignored.

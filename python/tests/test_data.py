@@ -1,9 +1,10 @@
-"""Tests for the data layer: uses live nflverse and nfelo files."""
+"""Tests for the data layer: mostly against live nflverse and nfelo files."""
 
 import nflreadpy
+import pandas as pd
 import pytest
 
-from nfl.data import FIRST_SEASON, DataLoader
+from nfl.data import FIRST_SEASON, DataLoader, previous_week
 
 # --- Test setup ---
 
@@ -39,6 +40,13 @@ def test_known_game_has_the_right_sides_and_signs(loader):
     assert game["spread_line"] == 3.0
     assert game["margin"] == 7
     assert game["kickoff"] == "2024-09-05T20:20:00-0400"
+
+
+def test_previous_week_crosses_into_last_season():
+    # At a season opener, last week is the previous season's final week.
+    games = pd.DataFrame({"season": [2025, 2025, 2026, 2026], "week": [21, 22, 1, 2]})
+    assert previous_week(games, 2026, 1) == (2025, 22)
+    assert previous_week(games, 2026, 2) == (2026, 1)
 
 
 def test_unpublished_season_is_an_error():

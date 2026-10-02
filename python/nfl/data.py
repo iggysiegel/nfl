@@ -40,6 +40,24 @@ def upcoming_week() -> tuple[int, int]:
     return int(unplayed["season"].iloc[0]), int(unplayed["week"].iloc[0])
 
 
+def previous_week(games: pd.DataFrame, season: int, week: int) -> tuple[int, int]:
+    """The last week before the given one, in last season at a season opener.
+
+    Args:
+        games: ``DataLoader.data``.
+        season: The season of the given week.
+        week: The given week number.
+
+    Returns:
+        The previous week's season and week number.
+    """
+    earlier = (games["season"] < season) | (
+        (games["season"] == season) & (games["week"] < week)
+    )
+    last = games[earlier].sort_values(["season", "week"]).iloc[-1]
+    return int(last["season"]), int(last["week"])
+
+
 class DataLoader:
     """Load and join NFL game data for a range of seasons."""
 
