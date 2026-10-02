@@ -121,4 +121,32 @@ describe('buildBoard', () => {
     );
     expect(board.seasonAts.closing).toEqual({ wins: 0, losses: 0 });
   });
+
+  it('attaches each insight to its own game and leaves the rest empty', () => {
+    const games = [
+      prediction({ gameId: 'with', homeTeam: 'SEA', awayTeam: 'NE' }),
+      prediction({ gameId: 'without', homeTeam: 'KC', awayTeam: 'BAL' }),
+    ];
+    const insights = {
+      season: 2026,
+      week: 1,
+      games: [{ homeTeam: 'SEA', awayTeam: 'NE', insight: 'Seattle is missing both starting tackles.' }],
+    };
+    const board = buildBoard(games, '2026-09-05T00:00:00Z', insights);
+    expect(board.games.map((game) => [game.gameId, game.insight])).toEqual([
+      ['with', 'Seattle is missing both starting tackles.'],
+      ['without', null],
+    ]);
+  });
+
+  it('ignores insights written for a different week', () => {
+    // A stale file must not put last week's news on this week's games.
+    const insights = {
+      season: 2025,
+      week: 22,
+      games: [{ homeTeam: 'SEA', awayTeam: 'NE', insight: 'stale' }],
+    };
+    const board = buildBoard([prediction()], '2026-09-05T00:00:00Z', insights);
+    expect(board.games[0]?.insight).toBeNull();
+  });
 });

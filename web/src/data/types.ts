@@ -40,7 +40,24 @@ export type Game = Omit<Prediction, 'quantiles' | 'margin'> & {
   /** How far the closing line sits from the centre of the model's distribution,
    *  or null when no line was posted. */
   confidence: number | null;
+  /** A short LLM-written paragraph on news the model cannot see, or null when the
+   *  deploy wrote none (local builds, started games, or a failed run). */
+  insight: string | null;
 };
+
+/** One game's AI insight, as `npm run build:insights` writes it. */
+export interface GameInsight {
+  homeTeam: string;
+  awayTeam: string;
+  insight: string;
+}
+
+/** The insights file: the week it was written for, and one entry per upcoming game. */
+export interface SlateInsights {
+  season: number;
+  week: number;
+  games: GameInsight[];
+}
 
 /** A record over decided games only. A push — the margin landing exactly on the line —
  *  is not an outcome the model got right or wrong, so it is left out rather than

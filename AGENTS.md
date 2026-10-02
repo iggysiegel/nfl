@@ -29,7 +29,11 @@ The website is an react / typescript npm project, run from `web/`.
 npm run dev            # bake the JSON, then serve
 npm run build          # bake, typecheck, bundle
 npm run lint && npm run test
+npm run build:insights # AI insights; spends API calls, needs the keys below
 ```
+
+`build:insights` reads `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY`, and
+`TAVILY_API_KEY` from the environment; export them in the shell to run it locally.
 
 ## Rules
 
@@ -85,8 +89,12 @@ npm run lint && npm run test
   holding exactly what `predict_week` emits. It shares no history with `main` and must
   not be merged into it.
 - `.github/workflows/`: `ci.yml` lints and tests both components, `deploy.yml`
-  publishes to Pages, `update.yml` runs `scripts.forecast` daily and carries the
-  saved model from run to run as the `model` artifact.
+  writes the AI insights and publishes to Pages, `update.yml` runs
+  `scripts.forecast` daily, carries the saved model from run to run as the `model`
+  artifact, and then calls `deploy.yml`.
+- AI insights are never stored: each deploy regenerates them for games not yet
+  kicked off, from repo secrets `LLM_API_KEY` and `TAVILY_API_KEY` and variables
+  `LLM_BASE_URL` and `LLM_MODEL`. Any failure ships the site without them.
 
 ## Code map
 
@@ -105,7 +113,8 @@ npm run lint && npm run test
   week's final scores, predicting from a saved model when one exists and fitting
   otherwise; `--refit` forces a fit), `backtest.py`.
 - `web/build/` reads the prediction CSVs and bakes the JSON the site ships;
-  `web/src/` is the React app.
+  `insights.ts` and `writeInsights.ts` write the AI insights (one news search per
+  game, one OpenAI-compatible chat call for the slate); `web/src/` is the React app.
 - `predictions/` and `models/` are gitignored.
 
 ## References

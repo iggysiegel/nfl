@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash -el {0}
+        shell: bash -leo pipefail {0}
         working-directory: python
     steps:
       - uses: actions/checkout@v4
@@ -18,18 +18,23 @@ jobs:
         with:
           environment-file: python/environment.yml
           activate-environment: nfl
-      - name: Lint
+
+      - name: Python lint
         run: |
           ruff check .
           ruff format --check .
-      - name: Tests
+
+      - name: Python tests
         run: pytest -q
 
   web:
     runs-on: ubuntu-latest
     defaults:
       run:
+        shell: bash -eo pipefail {0}
         working-directory: web
+    env:
+      PREDICTIONS_DIR: ${{ github.workspace }}/data/predictions
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -40,11 +45,12 @@ jobs:
         with:
           node-version-file: web/.nvmrc
       - run: npm ci
-      - name: Lint
+
+      - name: Web lint
         run: npm run lint
-      - name: Tests
+
+      - name: Web tests
         run: npm run test
-      - name: Build
+
+      - name: Web build
         run: npm run build
-        env:
-          PREDICTIONS_DIR: ${{ github.workspace }}/data/predictions

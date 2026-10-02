@@ -10,7 +10,6 @@
     "noEmit": true,
     "isolatedModules": true,
     "skipLibCheck": true,
-    "baseUrl": ".",
     "paths": { "@/*": ["./src/*"] }
   },
   "include": ["build", "vite.config.ts", "src/data", "src/lib"]

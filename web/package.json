@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build:data": "tsx --tsconfig tsconfig.node.json build/index.ts",
+    "build:insights": "tsx --tsconfig tsconfig.node.json build/writeInsights.ts",
     "dev": "npm run build:data && vite",
     "build": "npm run build:data && tsc -b && vite build",
     "preview": "vite preview",
@@ -28,6 +29,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
+    "openai": "^7.27.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.18.0",
