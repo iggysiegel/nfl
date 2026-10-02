@@ -15,12 +15,19 @@ import argparse
 import pandas as pd
 
 from nfl.data import DataLoader
-from nfl.paths import PREDICTIONS_DIR
+from nfl.paths import PREDICTIONS_DIR, predictions_path
 from nfl.predict import fit_week, score
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    """Parse the backtest range and sampler settings."""
+    """Parse the backtest range and sampler settings.
+
+    Args:
+        argv: Command-line arguments; ``None`` reads ``sys.argv``.
+
+    Returns:
+        The parsed arguments.
+    """
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
@@ -92,13 +99,17 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def weeks_to_run(
-    played_weeks: list[int],
-    season: int,
-    args: argparse.Namespace,
-) -> list[int]:
-    """Trim a season's played weeks to the requested start/end boundaries."""
-    weeks = played_weeks
+def weeks_to_run(weeks: list[int], season: int, args: argparse.Namespace) -> list[int]:
+    """Trim a season's played weeks to the requested start and end weeks.
+
+    Args:
+        weeks: The season's played week numbers, in order.
+        season: The season the weeks belong to.
+        args: Parsed command-line arguments.
+
+    Returns:
+        The weeks to forecast.
+    """
     if season == args.start_season:
         weeks = [week for week in weeks if week >= args.start_week]
     if season == args.end_season and args.end_week is not None:
@@ -107,7 +118,11 @@ def weeks_to_run(
 
 
 def main(argv: list[str] | None = None) -> None:
-    """Run the walk-forward backtest and print the score table."""
+    """Run the walk-forward backtest and print the score table.
+
+    Args:
+        argv: Command-line arguments; ``None`` reads ``sys.argv``.
+    """
     args = parse_args(argv)
     loader = DataLoader(args.start_season - args.train_window, args.end_season)
     sampler = {
@@ -127,7 +142,7 @@ def main(argv: list[str] | None = None) -> None:
         ]
         played_weeks = sorted(int(week) for week in played["week"].unique())
         for week in weeks_to_run(played_weeks, season, args):
-            path = PREDICTIONS_DIR / f"predictions_{season}_{week:02d}.csv"
+            path = predictions_path(season, week)
             if path.exists() and not args.no_resume:
                 print(f"{season} week {week}: already done, skipping")
                 continue

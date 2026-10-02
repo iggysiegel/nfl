@@ -51,7 +51,11 @@ class Formatter:
         print("Spreads shown in market convention (negative = home favored).")
 
     def _print_game(self, row: pd.Series) -> None:
-        """Print one game's line of the report."""
+        """Print one game's line of the report.
+
+        Args:
+            row: One game's prediction.
+        """
         matchup = f"{row['away_team']} @ {row['home_team']}"
         market = f"{-row['spread_line']:+.1f}" if pd.notna(row["spread_line"]) else "-"
         model = f"{-row['pred_mean']:+.1f}"
