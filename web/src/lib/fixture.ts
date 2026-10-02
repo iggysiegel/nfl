@@ -37,5 +37,5 @@ export function prediction(overrides: Partial<Prediction> = {}): Prediction {
  *  grid. Pass `confidence` explicitly to test a value other than the fixture's own. */
 export function game(overrides: Partial<Game> = {}): Game {
   const { quantiles, margin, ...shown } = prediction();
-  return { ...shown, confidence: confidence(prediction()), ...overrides };
+  return { ...shown, confidence: confidence(prediction()), insight: null, ...overrides };
 }

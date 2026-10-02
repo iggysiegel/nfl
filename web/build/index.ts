@@ -2,27 +2,27 @@
  *
  * Usage: npm run build:data
  * Set PREDICTIONS_DIR to read a checkout somewhere other than <repo>/predictions.
+ * Folds in src/data/insights.json when `npm run build:insights` has written one.
  */
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import type { SlateInsights } from '@/data/types';
 import { buildBoard, buildHistory } from './aggregate';
+import { DATA_DIR, INSIGHTS_PATH, PREDICTIONS_DIR } from './paths';
 import { readPredictions } from './readPredictions';
 
-const HERE = dirname(fileURLToPath(import.meta.url));
-const PREDICTIONS_DIR =
-  process.env.PREDICTIONS_DIR ?? join(HERE, '..', '..', 'predictions');
-const OUT_DIR = join(HERE, '..', 'src', 'data');
-
 function write(name: string, payload: unknown): void {
-  mkdirSync(OUT_DIR, { recursive: true });
-  const path = join(OUT_DIR, name);
+  mkdirSync(DATA_DIR, { recursive: true });
+  const path = join(DATA_DIR, name);
   writeFileSync(path, `${JSON.stringify(payload)}\n`);
   console.log(`${name}: ${(readFileSync(path).length / 1024).toFixed(1)} KB`);
 }
 
 const games = readPredictions(PREDICTIONS_DIR);
-const board = buildBoard(games, new Date().toISOString());
+const insights = existsSync(INSIGHTS_PATH)
+  ? (JSON.parse(readFileSync(INSIGHTS_PATH, 'utf8')) as SlateInsights)
+  : null;
+const board = buildBoard(games, new Date().toISOString(), insights);
 console.log(`read ${games.length} games from ${PREDICTIONS_DIR}`);
 write('board.json', board);
 write('history.json', buildHistory(games));

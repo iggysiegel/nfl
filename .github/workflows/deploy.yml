@@ -19,6 +19,12 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    defaults:
+      run:
+        shell: bash -eo pipefail {0}
+        working-directory: web
+    env:
+      PREDICTIONS_DIR: ${{ github.workspace }}/data/predictions
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -29,11 +35,22 @@ jobs:
         with:
           node-version-file: web/.nvmrc
       - run: npm ci
-        working-directory: web
-      - run: npm run build
-        working-directory: web
+
+      - name: Write the AI insights
+        continue-on-error: true
         env:
-          PREDICTIONS_DIR: ${{ github.workspace }}/data/predictions
+          LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
+          LLM_MODEL: ${{ vars.LLM_MODEL }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          npm run --silent build:insights 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Build the site
+        run: npm run build
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

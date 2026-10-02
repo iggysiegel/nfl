@@ -8,6 +8,7 @@ import type {
   History,
   Prediction,
   SeasonRow,
+  SlateInsights,
   Totals,
 } from "@/data/types";
 import {
@@ -88,31 +89,57 @@ export function buildHistory(games: Prediction[]): History {
 
 /** Reduce a prediction to what the browser actually needs: the quantile grid becomes
  *  one confidence value, and the played result drops out. */
-function toGame(prediction: Prediction): Game {
+function toGame(prediction: Prediction, insight: string | null): Game {
   const { quantiles, margin, ...shown } = prediction;
-  return { ...shown, confidence: confidence(prediction) };
+  return { ...shown, confidence: confidence(prediction), insight };
 }
 
-/** The most recent week, plus that season's record so far. */
-export function buildBoard(games: Prediction[], generatedAt: string) {
+/** The most recent week in the predictions. */
+export function latestWeek(games: Prediction[]): { season: number; week: number } {
   const latest = games.reduce((best, game) =>
     game.season > best.season ||
     (game.season === best.season && game.week > best.week)
       ? game
       : best,
   );
+  return { season: latest.season, week: latest.week };
+}
+
+/** The games of one week. */
+export function weekGames(
+  games: Prediction[],
+  { season, week }: { season: number; week: number },
+): Prediction[] {
+  return games.filter((game) => game.season === season && game.week === week);
+}
+
+/** The most recent week, plus that season's record so far. Insights written for a
+ *  different week are ignored. */
+export function buildBoard(
+  games: Prediction[],
+  generatedAt: string,
+  insights: SlateInsights | null = null,
+) {
+  const latest = latestWeek(games);
   const decided = games.filter(
     (game) => game.season === latest.season && game.margin !== null,
   );
+  const entries =
+    insights?.season === latest.season && insights.week === latest.week
+      ? insights.games
+      : [];
+  const insightFor = (game: Prediction) =>
+    entries.find(
+      (entry) =>
+        entry.homeTeam === game.homeTeam && entry.awayTeam === game.awayTeam,
+    )?.insight ?? null;
   return {
     season: latest.season,
     week: latest.week,
     generatedAt,
-    games: games
-      .filter(
-        (game) => game.season === latest.season && game.week === latest.week,
-      )
-      .map(toGame),
+    games: weekGames(games, latest).map((game) =>
+      toGame(game, insightFor(game)),
+    ),
     seasonAts: {
       closing: atsRecord(backed(decided, closing), closing),
       opening: atsRecord(backed(decided, opening), opening),

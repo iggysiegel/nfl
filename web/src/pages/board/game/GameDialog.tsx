@@ -37,6 +37,13 @@ export function GameDialog({ game, onClose }: { game: Game | null; onClose: () =
           <ContributionTable game={game} />
           <GameFootnotes game={game} />
         </div>
+
+        {game.insight && (
+          <div className={s.section}>
+            <span className="label">AI Insights</span>
+            <p className={s.insight}>{game.insight}</p>
+          </div>
+        )}
       </div>
     </Dialog>
   );
