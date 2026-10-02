@@ -1,27 +1,36 @@
-"""Fit through the latest completed games and forecast a week of games.
+"""Forecast the upcoming week's games.
 
-Saves the fitted posterior to ``models/``, archives the week's predictions CSV in
-``predictions/``, and prints the report.
+Prints the predictions and saves them to ``predictions/``. The fitted model is saved
+to ``models/``, so later runs for the same week reuse it instead of refitting; pass
+--refit to fit again. If last week's model is still saved, last week's predictions
+are first updated with the final scores.
 
 Usage:
     python -m scripts.forecast
     python -m scripts.forecast --season 2026 --week 1
-    python -m scripts.forecast --draws 500 --tune 500 --no-progress
-
-Without --season and --week, forecasts the first week with an unplayed game.
+    python -m scripts.forecast --refit --draws 500 --tune 500 --no-progress
 """
 
 import argparse
 
-from nfl.data import DataLoader, upcoming_week
+import pandas as pd
+
+from nfl.data import DataLoader, previous_week, upcoming_week
 from nfl.model import StateSpaceModel
-from nfl.paths import MODELS_DIR, PREDICTIONS_DIR
+from nfl.paths import MODELS_DIR, PREDICTIONS_DIR, model_path, predictions_path
 from nfl.predict import fit_week, predict_week
 from nfl.report import Formatter
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    """Parse the forecast target and sampler settings."""
+    """Parse the forecast target and sampler settings.
+
+    Args:
+        argv: Command-line arguments; ``None`` reads ``sys.argv``.
+
+    Returns:
+        The parsed arguments.
+    """
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
@@ -70,36 +79,38 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="show the sampling progress bar",
     )
     parser.add_argument(
-        "--reuse-trace",
+        "--refit",
         action="store_true",
-        help="predict from the saved posterior for this week instead of fitting",
+        help="refit the week instead of using the saved model",
     )
     return parser.parse_args(argv)
 
 
-def main(argv: list[str] | None = None) -> None:
-    """Fit, save the posterior, archive the predictions, and print the report."""
-    args = parse_args(argv)
-    if args.season is None or args.week is None:
-        season, week = upcoming_week()
-    else:
-        season, week = args.season, args.week
+def update_week(
+    games: pd.DataFrame, season: int, week: int, args: argparse.Namespace
+) -> pd.DataFrame:
+    """Predict a week from its saved model or a new fit, and save the predictions.
 
-    print(f"{season} week {week}: fitting...")
-    loader = DataLoader(season - args.train_window, season)
-    trace_path = MODELS_DIR / f"model_{season}_{week:02d}.nc"
+    Args:
+        games: ``DataLoader.data``.
+        season: The season of the predicted week.
+        week: The predicted week number.
+        args: Parsed command-line arguments.
 
-    if args.reuse_trace and trace_path.exists():
+    Returns:
+        The week's prediction table.
+    """
+    path = model_path(season, week)
+    if path.exists() and not args.refit:
+        print(f"{season} week {week}: predicting from the saved model...")
         model = StateSpaceModel()
-        model.load(trace_path)
-        games = loader.data
+        model.load(path)
         week_games = games[(games["season"] == season) & (games["week"] == week)]
-        if week_games.empty:
-            raise ValueError(f"no games for {season} week {week}")
         prediction = predict_week(model.trace, week_games)
     else:
+        print(f"{season} week {week}: fitting...")
         model, prediction = fit_week(
-            loader.data,
+            games,
             season,
             week,
             args.train_window,
@@ -112,13 +123,33 @@ def main(argv: list[str] | None = None) -> None:
             progressbar=args.progress,
         )
         MODELS_DIR.mkdir(exist_ok=True)
-        model.save(trace_path)
+        model.save(path)
 
     PREDICTIONS_DIR.mkdir(exist_ok=True)
-    prediction.to_csv(
-        PREDICTIONS_DIR / f"predictions_{season}_{week:02d}.csv", index=False
-    )
-    Formatter().print_report(prediction)
+    prediction.to_csv(predictions_path(season, week), index=False)
+    return prediction
+
+
+def main(argv: list[str] | None = None) -> None:
+    """Forecast the upcoming week's games, updating last week with its final scores.
+
+    Args:
+        argv: Command-line arguments; ``None`` reads ``sys.argv``.
+    """
+    args = parse_args(argv)
+    if args.season is None or args.week is None:
+        season, week = upcoming_week()
+    else:
+        season, week = args.season, args.week
+    games = DataLoader(season - args.train_window, season).data
+
+    # Fill in last week's final scores while its model is still saved.
+    previous = previous_week(games, season, week)
+    if model_path(*previous).exists():
+        update_week(games, *previous, args)
+        model_path(*previous).unlink()
+
+    Formatter().print_report(update_week(games, season, week, args))
 
 
 if __name__ == "__main__":
