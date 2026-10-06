@@ -53,6 +53,8 @@ npm run build:insights # AI insights; spends API calls, needs the keys below
   convert to pandas at the load boundary and use pandas everywhere else.
 - **Python computes nothing the site displays.** It fits, predicts, and writes the
   predictions. Sign flips, confidence, ATS, and every label belong to the web build.
+- **Ask before spending API calls.** Tavily and the LLM have a monthly quota, spent
+  by `build:insights` and so by every deploy.
 
 ## Model invariants
 
@@ -77,7 +79,9 @@ npm run build:insights # AI insights; spends API calls, needs the keys below
   teams, never on ids.
 - nfeloqb's `team1` is the home team. Its `*_value_pre` ratings are pre-game by
   construction, so the walk-forward backtest is leak-free without extra machinery.
-  An upcoming game it has not rated yet gets `qb_diff = 0`.
+  An upcoming game it has not rated yet gets `qb_diff = 0`; a week with no ratings at
+  all stops `scripts.forecast`. It can rate a starter it cannot name, so check the
+  ratings, not the names.
 - nflreadpy returns zero rows, not an error, for an unpublished season;
   `DataLoader` turns that into a `ValueError`. Its `get_current_season` is calendar
   based and does not roll over until kickoff, so the forecast script finds the

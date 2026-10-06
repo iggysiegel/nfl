@@ -141,7 +141,11 @@ def main(argv: list[str] | None = None) -> None:
         season, week = upcoming_week()
     else:
         season, week = args.season, args.week
+
     games = DataLoader(season - args.train_window, season).data
+    week_games = games[(games["season"] == season) & (games["week"] == week)]
+    if week_games["home_qb_value"].isna().all():
+        raise ValueError(f"nfeloqb has not rated {season} week {week} yet.")
 
     # Fill in last week's final scores while its model is still saved.
     previous = previous_week(games, season, week)

@@ -61,5 +61,5 @@ class Formatter:
         model = f"{-row['pred_mean']:+.1f}"
         confidence = f"{row['confidence']:.0%}" if pd.notna(row["confidence"]) else "-"
         print(f"{matchup:<24}{market:>10}{model:>10}{confidence:>14}")
-        if pd.isna(row["home_qb_name"]):
-            print("    WARNING: no QB data for this game; QB signal is zero.")
+        if pd.isna(row["home_qb_value"]) or pd.isna(row["away_qb_value"]):
+            print("    WARNING: no QB rating for this game; QB signal is zero.")
