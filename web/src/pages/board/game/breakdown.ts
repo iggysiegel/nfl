@@ -11,13 +11,17 @@ export interface MatchupRow {
   note?: string;
 }
 
+/** Shown in place of a starter nfeloqb rated without naming, usually a new QB. */
+const UNNAMED_QB = 'Unnamed starter';
+
 /** True when both starting quarterbacks were rated.
  *
  * ``DataLoader`` fills the *difference* to 0 when either side is missing, so one
- * unrated quarterback zeroes the whole term.
+ * unrated quarterback zeroes the whole term. Decided from the ratings, not the names:
+ * nfeloqb can rate a starter it cannot name.
  */
 export function hasQb(game: Game): boolean {
-  return game.homeQb !== null && game.awayQb !== null;
+  return game.homeQbValue !== null && game.awayQbValue !== null;
 }
 
 /** True at a neutral site, where the model contributes no home-field points.
@@ -81,7 +85,7 @@ export function matchupRows(game: Game, leagueQbValue: number): MatchupRow[] {
       away: qb?.away ?? null,
       home: qb?.home ?? null,
       edge: game.qbEffect,
-      note: qb === null ? undefined : `${game.awayQb} / ${game.homeQb}`,
+      note: qb === null ? undefined : `${game.awayQb ?? UNNAMED_QB} / ${game.homeQb ?? UNNAMED_QB}`,
     },
     { label: 'Home field', away: null, home: game.homeField, edge: game.homeField },
   ];

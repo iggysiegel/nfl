@@ -57,6 +57,14 @@ describe('a game with no rated quarterback', () => {
   });
 });
 
+describe('a starter rated but not named', () => {
+  // nfeloqb rates a QB new to its roster file without naming him, and the model applies
+  // that rating, so the game must not be footnoted as having no quarterback.
+  it('still counts as rated', () => {
+    expect(hasQb(game({ homeQb: null }))).toBe(true);
+  });
+});
+
 describe('a neutral-site game', () => {
   const neutral = game({ homeField: 0, predMean: 3 });
 

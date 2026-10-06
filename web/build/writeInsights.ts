@@ -15,6 +15,7 @@ import { readPredictions } from './readPredictions';
 
 const TAVILY_URL = 'https://api.tavily.com/search';
 const RESULTS_PER_GAME = 8;
+const LLM_MAX_RETRIES = 5;
 
 interface TavilyResult {
   title: string;
@@ -66,7 +67,11 @@ if (!LLM_MODEL || !LLM_API_KEY || !TAVILY_API_KEY) {
   const week = latestWeek(predictions);
   const games = upcoming(weekGames(predictions, week), new Date());
   // An unset GitHub variable arrives as '', which the client would take as a URL.
-  const client = new OpenAI({ apiKey: LLM_API_KEY, baseURL: LLM_BASE_URL || undefined });
+  const client = new OpenAI({
+    apiKey: LLM_API_KEY,
+    baseURL: LLM_BASE_URL || undefined,
+    maxRetries: LLM_MAX_RETRIES,
+  });
   const insights = await generateInsights(
     games,
     tavilySearch(TAVILY_API_KEY),
