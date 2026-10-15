@@ -2,7 +2,8 @@ name: Update
 
 on:
   schedule:
-    - cron: "17 10 * * *" # daily, 5:17 AM EST / 6:17 AM EDT
+    - cron: "17 6 * * *"
+      timezone: "America/New_York"
   workflow_dispatch:
 
 jobs:

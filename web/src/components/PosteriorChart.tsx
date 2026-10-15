@@ -2,7 +2,10 @@ import s from './PosteriorChart.module.css';
 
 /* Posterior density over the margin: normal curve, market line, model mean.
    The predictive draws in predict_week are normal by construction, so the curve is
-   drawn from the mean and standard deviation rather than the quantile grid. */
+   drawn from the mean and standard deviation rather than the quantile grid.
+
+   The tick labels are HTML under the svg, because the svg scales with the dialog and
+   scaled text stops being readable on a phone. */
 
 const SPAN_SD = 3.2; // half-width of the x range, in standard deviations
 const SAMPLES = 96;
@@ -50,7 +53,7 @@ export function PosteriorChart({
 
   return (
     <div>
-      <svg className={s.chart} viewBox={`0 0 ${width} ${height + 14}`} role="img" aria-label={label}>
+      <svg className={s.chart} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={label}>
         <line x1="0" y1={height - 8} x2={width} y2={height - 8} stroke="var(--chart-grid)" strokeWidth="1" />
         <path d={area} fill="var(--accent-quiet)" />
         <polyline points={points.join(' ')} fill="none" stroke="var(--accent)" strokeWidth="1.75" />
@@ -67,14 +70,16 @@ export function PosteriorChart({
         )}
         <line x1={px(mean)} y1="6" x2={px(mean)} y2={height - 8} stroke="var(--accent)" strokeWidth="1.5" />
         {ticks.map((t) => (
-          <g key={t}>
-            <line x1={px(t)} y1={height - 8} x2={px(t)} y2={height - 4} stroke="var(--chart-grid)" strokeWidth="1" />
-            <text className={s.tick} x={px(t)} y={height + 8} textAnchor="middle">
-              {t > 0 ? `+${t}` : t}
-            </text>
-          </g>
+          <line key={t} x1={px(t)} y1={height - 8} x2={px(t)} y2={height - 4} stroke="var(--chart-grid)" strokeWidth="1" />
         ))}
       </svg>
+      <div className={s.axis}>
+        {ticks.map((t) => (
+          <span key={t} className={s.tick} style={{ left: `${(100 * px(t)) / width}%` }}>
+            {t > 0 ? `+${t}` : t}
+          </span>
+        ))}
+      </div>
       <div className={s.legend}>
         <span className={s.model}>— model {modelLabel}</span>
         {marketLine !== null && <span>-- market {marketLabel}</span>}

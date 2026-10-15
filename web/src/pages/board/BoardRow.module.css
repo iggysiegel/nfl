@@ -1,7 +1,11 @@
 /* One game. The whole row is a mouse target; the matchup is a real button so the row
    is reachable by keyboard too. */
-.row { cursor: pointer; transition: var(--t-hover) }
-.row:hover { background: var(--bg-hover) }
+.row { cursor: pointer; transition: var(--t-hover); -webkit-tap-highlight-color: transparent }
+.row:active { background: var(--bg-active) }
+/* Only where a pointer can hover: on a phone the hover color would stick after a tap. */
+@media (hover: hover) {
+  .row:hover { background: var(--bg-hover) }
+}
 
 .cell { padding: var(--sp-5) var(--sp-6); border-bottom: var(--border-w) solid var(--border-hairline) }
 
@@ -22,32 +26,37 @@
 .open { all: unset; display: block; width: 100%; cursor: pointer }
 .open:focus-visible { box-shadow: var(--ring-focus); border-radius: var(--r-2) }
 
-.matchup { display: flex; flex-direction: column; gap: 3px; min-width: 0 }
+.matchup { display: flex; flex-direction: column; gap: var(--sp-2); min-width: 0 }
 .teams { display: flex; align-items: center; gap: var(--sp-4) }
 .team { font: var(--type-num); letter-spacing: var(--ls-tight); color: var(--text-strong) }
 .at { font: var(--type-num-sm); color: var(--text-faint) }
-/* Indented so the stamp lines up under the team code, not under its side bar. */
-.kickoff { font: var(--type-num-sm); color: var(--text-faint); padding-left: 11px }
+/* Indented by the side bar and its gap, so the stamp lines up under the team code. */
+.kickoff { font: var(--type-num-sm); color: var(--text-faint); padding-left: calc(3px + var(--sp-4)) }
 
 .bar { width: 3px; height: 16px; flex: none; border-radius: var(--r-1); background: var(--border-strong) }
 .barOn { background: var(--accent) }
 
-.confidence { display: flex; flex-direction: column; gap: 5px; align-items: flex-end }
+.confidence { display: flex; flex-direction: column; gap: var(--sp-2); align-items: flex-end }
 .value { font: var(--type-num); font-variant-numeric: tabular-nums }
 .probBar { width: 100px; --prob-bar-h: 4px }
+
+.chevron { composes: cell; padding-left: 0; color: var(--text-faint) }
+.chevron svg { display: block }
 
 /* The kickoff stamp has a long and a short form; only one is ever shown. */
 .short { display: none }
 
 @media (max-width: 640px) {
-  .cell { padding: var(--sp-5) 10px }
+  .cell { padding: var(--sp-5) var(--sp-4) }
+  .chevron { padding-left: 0 }
   .disagreement { display: none }
   .probBar { width: 56px }
 }
 
-@media (max-width: 380px) {
-  .cell { padding: var(--sp-5) var(--sp-4) }
+@media (max-width: 480px) {
   .long { display: none }
   .short { display: inline }
   .probBar { display: none }
+  /* Team over number in every row, rather than wrapping only the longer spreads. */
+  .spread { display: inline-block; width: min-content }
 }

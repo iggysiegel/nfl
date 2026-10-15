@@ -1,3 +1,4 @@
+import { ChevronRight } from 'lucide-react';
 import { ProbBar } from '@/components/ProbBar';
 import type { Game } from '@/data/types';
 import { isBet } from '@/lib/ats';
@@ -41,9 +42,13 @@ export function BoardRow({ game, onOpen }: BoardRowProps) {
         </button>
       </td>
       <td className={`${s.numeric} ${s.market}`}>
-        {game.spreadClose === null ? DASH : marketSpread(game.homeTeam, game.spreadClose)}
+        <span className={s.spread}>
+          {game.spreadClose === null ? DASH : marketSpread(game.homeTeam, game.spreadClose)}
+        </span>
       </td>
-      <td className={`${s.numeric} ${s.model}`}>{marketSpread(game.homeTeam, game.predMean)}</td>
+      <td className={`${s.numeric} ${s.model}`}>
+        <span className={s.spread}>{marketSpread(game.homeTeam, game.predMean)}</span>
+      </td>
       <td className={`${s.numeric} ${s.disagreement} ${tone}`}>
         {disagreement === null ? DASH : `${Math.abs(disagreement).toFixed(1)} pts`}
       </td>
@@ -54,6 +59,10 @@ export function BoardRow({ game, onOpen }: BoardRowProps) {
             <ProbBar value={value * 100} tone={live ? 'accent' : 'neutral'} className={s.probBar} />
           )}
         </span>
+      </td>
+      {/* Says the row opens, for screens with no hover to say it first. */}
+      <td className={s.chevron}>
+        <ChevronRight size={16} strokeWidth={1.75} aria-hidden />
       </td>
     </tr>
   );

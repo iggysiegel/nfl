@@ -10,8 +10,7 @@
 .tick {
   position: absolute;
   transform: translateX(-50%);
-  font-family: var(--font-mono);
-  font-size: 11px;
+  font: var(--type-tick);
   color: var(--text-faint);
 }
 

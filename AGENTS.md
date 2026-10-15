@@ -23,7 +23,7 @@ python -m scripts.backtest --start-season 2019 --end-season 2025
 A full fit takes 2 to 3 minutes. For a smoke test pass `--draws 50 --tune 50
 --chains 1`.
 
-The website is an react / typescript npm project, run from `web/`.
+The site is a React and TypeScript project built with Vite, run from `web/`.
 
 ```
 npm run dev            # bake the JSON, then serve
@@ -32,8 +32,8 @@ npm run lint && npm run test
 npm run build:insights # AI insights; spends API calls, needs the keys below
 ```
 
-`build:insights` reads `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY`, and
-`TAVILY_API_KEY` from the environment; export them in the shell to run it locally.
+`build:insights` reads `LLM_API_KEY` and `TAVILY_API_KEY` from the environment;
+export them in the shell to run it locally.
 
 ## Rules
 
@@ -48,9 +48,7 @@ npm run build:insights # AI insights; spends API calls, needs the keys below
 - **Tests guard real behavior only.** A handful of human-readable cases per module,
   each catching something that would otherwise fail silently. Do not add tests for
   coverage, for argparse defaults, or for display formatting. Test files use a
-  `# --- Test setup ---` / `# --- Tests ---` layout.
-- **Python for the model, TypeScript for the site.** nflreadpy returns Polars;
-  convert to pandas at the load boundary and use pandas everywhere else.
+  `--- Test setup ---` / `--- Tests ---` comment layout.
 - **Python computes nothing the site displays.** It fits, predicts, and writes the
   predictions. Sign flips, confidence, ATS, and every label belong to the web build.
 - **Ask before spending API calls.** Tavily and the LLM have a monthly quota, spent
@@ -93,12 +91,12 @@ npm run build:insights # AI insights; spends API calls, needs the keys below
   holding exactly what `predict_week` emits. It shares no history with `main` and must
   not be merged into it.
 - `.github/workflows/`: `ci.yml` lints and tests both components, `deploy.yml`
-  writes the AI insights and publishes to Pages, `update.yml` runs
-  `scripts.forecast` daily, carries the saved model from run to run as the `model`
-  artifact, and then calls `deploy.yml`.
+  writes the AI insights and publishes to Pages, `update.yml` runs `scripts.forecast`
+  daily, carries the saved model from run to run as the `model` artifact, and then
+  calls `deploy.yml`.
 - AI insights are never stored: each deploy regenerates them for games not yet
-  kicked off, from repo secrets `LLM_API_KEY` and `TAVILY_API_KEY` and variables
-  `LLM_BASE_URL` and `LLM_MODEL`. Any failure ships the site without them.
+  kicked off, using repo secrets `LLM_API_KEY` and `TAVILY_API_KEY`. Any failure
+  ships the site without them and marks the insights step failed.
 
 ## Code map
 
@@ -116,9 +114,10 @@ npm run build:insights # AI insights; spends API calls, needs the keys below
 - `python/scripts/` — `forecast.py` (forecasts the upcoming week and fills in last
   week's final scores, predicting from a saved model when one exists and fitting
   otherwise; `--refit` forces a fit), `backtest.py`.
-- `web/build/` reads the prediction CSVs and bakes the JSON the site ships;
-  `insights.ts` and `writeInsights.ts` write the AI insights (one news search per
-  game, one OpenAI-compatible chat call for the slate); `web/src/` is the React app.
+- `web/build/` — reads the prediction CSVs and bakes the JSON the site ships.
+  `insights.ts` (prompt), `injuries.ts` (ESPN), and `writeInsights.ts` (Tavily and
+  the Gemini model list) write the AI insights.
+- `web/src/` — the React app; tokens and global classes in `src/styles/`.
 - `predictions/` and `models/` are gitignored.
 
 ## References

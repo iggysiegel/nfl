@@ -20,7 +20,7 @@ export function BoardHeader({ season, week, generatedAt, seasonAts }: BoardHeade
   return (
     <>
       <div className={s.title}>
-        <h1 className={s.week}>{weekLabel(season, week)}</h1>
+        <h1>{weekLabel(season, week)}</h1>
         <span className={s.updated}>updated {updatedLabel(generatedAt)}</span>
       </div>
       <div className={s.stats}>

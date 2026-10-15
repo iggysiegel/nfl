@@ -29,7 +29,7 @@ export function GameDialog({ game, onClose }: { game: Game | null; onClose: () =
           />
         </div>
 
-        <div className={s.breakdown}>
+        <div className={s.section}>
           <span className="label">Contributions to the spread</span>
           <span className={s.note}>
             Points relative to league average. The edge column is what reaches the spread.
@@ -41,7 +41,7 @@ export function GameDialog({ game, onClose }: { game: Game | null; onClose: () =
         {game.insight && (
           <div className={s.section}>
             <span className="label">AI Insights</span>
-            <p className={s.insight}>{game.insight}</p>
+            <p>{game.insight}</p>
           </div>
         )}
       </div>

@@ -5,7 +5,6 @@
   gap: var(--sp-6);
   flex-wrap: wrap;
 }
-.week { margin: 0; font: var(--type-h1); letter-spacing: var(--ls-display); color: var(--text-strong) }
 .updated { font: var(--type-num-sm); color: var(--text-faint); white-space: nowrap }
 
 .stats {

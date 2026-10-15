@@ -1,10 +1,11 @@
 /* Track height is a custom property so a caller can set it from its own stylesheet
-   without depending on which module's CSS the bundler emits first. */
+   without depending on which module's CSS the bundler emits first. The track is a step
+   darker than a hovered row, so it does not vanish under the pointer. */
 .track {
   display: block;
   position: relative;
   height: var(--prob-bar-h, 8px);
-  background: var(--bg-inset);
+  background: var(--bg-active);
   border-radius: var(--r-1);
   overflow: hidden;
 }
@@ -12,4 +13,4 @@
 .accent { background: var(--accent) }
 .neutral { background: var(--text-muted) }
 /* The centre tick, so a value's distance from even reads at a glance. */
-.tick { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--border-strong) }
+.tick { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--text-faint) }

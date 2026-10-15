@@ -25,9 +25,9 @@ export function AboutPage() {
         <h1>About This Site</h1>
         <p>
           This website is a personal project for predicting NFL game outcomes compared to market
-          odds. The site updates every Tuesday afternoon and pulls in the latest odds daily. Check
-          out the Games page to see the latest predictions. Check out the data branch of the GitHub
-          repo to see the model's historical predictions going back to 2015.
+          odds. The site updates and pulls in the latest odds daily. Check out the Games page to
+          see the latest predictions. Check out the data branch of the GitHub repo to see the
+          model's historical predictions going back to 2015.
         </p>
 
         <h2>Overview</h2>
@@ -87,7 +87,7 @@ export function AboutPage() {
           <div className={s.chartHead}>
             <span className="label">ATS cover rate by model confidence</span>
             <div className={s.chartControls}>
-              <SegmentedControl options={LINE_OPTIONS} value={line} onChange={setLine} size="sm" />
+              <SegmentedControl options={LINE_OPTIONS} value={line} onChange={setLine} />
               <span className={s.breakEven}>-- break-even {precisePercent(BREAK_EVEN)}</span>
             </div>
           </div>

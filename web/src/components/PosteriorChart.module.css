@@ -1,5 +1,6 @@
 .chart { display: block; width: 100% }
-.tick { font-family: var(--font-mono); font-size: 11px; fill: var(--text-faint) }
+.axis { position: relative; height: 1.2em }
+.tick { position: absolute; transform: translateX(-50%); font: var(--type-tick); color: var(--text-faint) }
 .legend {
   display: flex;
   gap: var(--sp-6);
