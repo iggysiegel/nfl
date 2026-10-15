@@ -20,9 +20,8 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--sp-5);
-  padding: var(--sp-5) var(--sp-6);
+  /* Tighter on the right and in height: the close button's own box is its margin. */
+  padding: var(--sp-3) var(--sp-4) var(--sp-3) var(--sp-6);
   border-bottom: var(--border-w) solid var(--border-hairline);
 }
-.title { font: var(--type-h3); color: var(--text-strong); margin: 0 }
-.close { border: 0; background: none; cursor: pointer; color: var(--text-muted); font: var(--text-16); padding: 0 }
 .body { padding: var(--sp-6); font: var(--type-body-sm) }

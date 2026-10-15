@@ -1,6 +1,7 @@
 /* Overrides this site applies on top of the design system: the sans is Source Sans 3
    rather than IBM Plex Sans, and the composed type roles are pinned to fixed pixel
-   sizes rather than the token scale.
+   sizes rather than the token scale. The last two roles are the site's own: control
+   text, and chart tick labels.
    On :root rather than [data-theme] — these do not vary by theme, and keying them on
    an attribute React sets would leave the first paint in the wrong font. */
 :root{
@@ -12,6 +13,9 @@
   --type-h3:600 16px/1.25 var(--font-sans);
   --type-body:400 16px/1.45 var(--font-sans);
   --type-body-sm:400 14px/1.45 var(--font-sans);
+  --type-num-lg:500 22px/1.1 var(--font-mono);
+  --type-ui:500 13px/1.2 var(--font-sans);
+  --type-tick:400 11px/1.2 var(--font-mono);
 }
 a{text-decoration:none}
 a:hover{text-decoration:underline}

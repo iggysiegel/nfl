@@ -3,7 +3,7 @@
 
 .head {
   composes: label from global;
-  padding: 10px 14px;
+  padding: var(--sp-4) var(--sp-6);
   border-bottom: var(--border-w) solid var(--border-strong);
   white-space: nowrap;
   text-align: right;
@@ -11,7 +11,7 @@
 .season { composes: head; text-align: left }
 
 .cell {
-  padding: 10px 14px;
+  padding: var(--sp-5) var(--sp-6);
   border-bottom: var(--border-w) solid var(--border-hairline);
   font: var(--type-num);
   font-variant-numeric: tabular-nums;
@@ -25,9 +25,10 @@
 .rate { color: var(--text-faint) }
 
 .total {
-  padding: var(--sp-5) 14px;
+  padding: var(--sp-5) var(--sp-6);
   border-top: var(--border-w) solid var(--border-strong);
-  font: var(--fw-semibold) var(--text-14) / 1.2 var(--font-mono);
+  font: var(--type-num);
+  font-weight: var(--fw-semibold);
   font-variant-numeric: tabular-nums;
   color: var(--text-strong);
   white-space: nowrap;

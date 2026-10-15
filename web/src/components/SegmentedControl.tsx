@@ -9,7 +9,6 @@ interface SegmentedControlProps<T extends string> {
   options: readonly SegmentedOption<T>[];
   value: T;
   onChange: (value: T) => void;
-  size?: 'sm' | 'md';
 }
 
 /** A radio group: one of several mutually exclusive choices, which is what this is —
@@ -18,7 +17,6 @@ export function SegmentedControl<T extends string>({
   options,
   value,
   onChange,
-  size = 'md',
 }: SegmentedControlProps<T>) {
   return (
     <div role="radiogroup" className={s.group}>
@@ -31,7 +29,7 @@ export function SegmentedControl<T extends string>({
             role="radio"
             aria-checked={on}
             onClick={() => onChange(option.value)}
-            className={`${s.option} ${size === 'sm' ? s.sm : ''} ${on ? s.on : ''}`}
+            className={`${s.option} ${on ? s.on : ''}`}
           >
             {option.label}
           </button>

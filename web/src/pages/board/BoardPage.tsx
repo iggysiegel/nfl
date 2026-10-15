@@ -33,7 +33,7 @@ export function BoardPage() {
         <EmptyBoard />
       ) : (
         <>
-          <SegmentedControl options={SORT_OPTIONS} value={sort} onChange={setSort} size="sm" />
+          <SegmentedControl options={SORT_OPTIONS} value={sort} onChange={setSort} />
           <BoardTable games={games} onOpen={setOpenGameId} />
         </>
       )}

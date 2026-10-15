@@ -87,7 +87,7 @@ export function AboutPage() {
           <div className={s.chartHead}>
             <span className="label">ATS cover rate by model confidence</span>
             <div className={s.chartControls}>
-              <SegmentedControl options={LINE_OPTIONS} value={line} onChange={setLine} size="sm" />
+              <SegmentedControl options={LINE_OPTIONS} value={line} onChange={setLine} />
               <span className={s.breakEven}>-- break-even {precisePercent(BREAK_EVEN)}</span>
             </div>
           </div>

@@ -5,12 +5,12 @@
 /* Marks where the betting threshold begins. */
 .divider { stroke: var(--border-strong); stroke-width: 1 }
 
-.text { font-family: var(--font-mono); font-size: 11px }
+.text { font: var(--type-tick) }
 .gridLabel { composes: text; fill: var(--text-faint) }
 .bandLabel { composes: text; fill: var(--text-muted) }
 .count { composes: text; fill: var(--text-faint) }
 .betFlag { composes: text; fill: var(--text-muted) }
-.rate { font-family: var(--font-mono); font-size: 12px; fill: var(--text-strong) }
+.rate { font: var(--type-num-sm); fill: var(--text-strong) }
 
 .covers { fill: var(--accent) }
 .misses { fill: var(--text-faint) }

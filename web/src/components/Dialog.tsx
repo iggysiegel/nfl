@@ -1,3 +1,4 @@
+import { X } from 'lucide-react';
 import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import s from './Dialog.module.css';
 
@@ -37,9 +38,9 @@ export function Dialog({ open, title, onClose, width = 440, children }: DialogPr
       }}
     >
       <header className={s.header}>
-        <h3 className={s.title}>{title}</h3>
-        <button type="button" aria-label="Close" className={s.close} onClick={dismiss}>
-          ×
+        <h3>{title}</h3>
+        <button type="button" aria-label="Close" className="icon-button" onClick={dismiss}>
+          <X size={16} strokeWidth={1.75} aria-hidden />
         </button>
       </header>
       <div className={s.body}>{children}</div>

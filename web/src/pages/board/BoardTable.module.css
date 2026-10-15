@@ -2,7 +2,7 @@
 
 .head {
   composes: label from global;
-  padding: 10px var(--sp-6);
+  padding: var(--sp-4) var(--sp-6);
   border-bottom: var(--border-w) solid var(--border-strong);
   text-align: right;
 }
@@ -15,13 +15,12 @@
 @media (max-width: 640px) {
   /* Nothing is dropped below this width, so the table can shrink to the viewport. */
   .table { min-width: 0 }
-  .head { padding: 10px }
+  .head { padding: var(--sp-4) }
   .disagreement { display: none }
   .confidence { width: auto }
 }
 
 @media (max-width: 380px) {
-  .head { padding: 10px var(--sp-4) }
   .long { display: none }
   .short { display: inline }
 }

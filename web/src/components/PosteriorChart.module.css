@@ -1,5 +1,5 @@
 .chart { display: block; width: 100% }
-.tick { font-family: var(--font-mono); font-size: 11px; fill: var(--text-faint) }
+.tick { font: var(--type-tick); fill: var(--text-faint) }
 .legend {
   display: flex;
   gap: var(--sp-6);

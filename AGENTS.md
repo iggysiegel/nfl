@@ -51,6 +51,11 @@ export them in the shell to run it locally.
   `# --- Test setup ---` / `# --- Tests ---` layout.
 - **Python for the model, TypeScript for the site.** nflreadpy returns Polars;
   convert to pandas at the load boundary and use pandas everywhere else.
+- **The site styles through its tokens.** Every `font` in `web/` is a `--type-*`
+  role, and every spacing, color, and radius is a token from `web/src/styles/`. A new
+  size goes in the tokens (the site's own roles live in `app.css`), never in a
+  component. Shared chrome is a global class there too: `.card`, `.label`,
+  `.icon-button`.
 - **Python computes nothing the site displays.** It fits, predicts, and writes the
   predictions. Sign flips, confidence, ATS, and every label belong to the web build.
 - **Ask before spending API calls.** Tavily and the LLM have a monthly quota, spent
