@@ -25,9 +25,9 @@ export function AboutPage() {
         <h1>About This Site</h1>
         <p>
           This website is a personal project for predicting NFL game outcomes compared to market
-          odds. The site updates every Tuesday afternoon and pulls in the latest odds daily. Check
-          out the Games page to see the latest predictions. Check out the data branch of the GitHub
-          repo to see the model's historical predictions going back to 2015.
+          odds. The site updates and pulls in the latest odds daily. Check out the Games page to
+          see the latest predictions. Check out the data branch of the GitHub repo to see the
+          model's historical predictions going back to 2015.
         </p>
 
         <h2>Overview</h2>
