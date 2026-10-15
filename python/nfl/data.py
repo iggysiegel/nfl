@@ -27,19 +27,6 @@ OPEN_LINES_URL = (
 )
 
 
-def upcoming_week() -> tuple[int, int]:
-    """The season and week of the first unplayed game on the published schedules.
-
-    Raises:
-        ValueError: If every scheduled game has been played (the offseason).
-    """
-    schedule = nflreadpy.load_schedules(seasons=True).to_pandas()
-    unplayed = schedule[schedule["result"].isna()].sort_values(["season", "week"])
-    if unplayed.empty:
-        raise ValueError("Every scheduled game has been played; nothing to forecast.")
-    return int(unplayed["season"].iloc[0]), int(unplayed["week"].iloc[0])
-
-
 def previous_week(games: pd.DataFrame, season: int, week: int) -> tuple[int, int]:
     """The last week before the given one, in last season at a season opener.
 
@@ -56,6 +43,64 @@ def previous_week(games: pd.DataFrame, season: int, week: int) -> tuple[int, int
     )
     last = games[earlier].sort_values(["season", "week"]).iloc[-1]
     return int(last["season"]), int(last["week"])
+
+
+def current_week() -> tuple[int, int]:
+    """The season and week of the first unplayed game on the published schedules.
+
+    Raises:
+        ValueError: If every scheduled game has been played (the offseason).
+    """
+    schedule = nflreadpy.load_schedules(seasons=True).to_pandas()
+    unplayed = schedule[schedule["result"].isna()].sort_values(["season", "week"])
+    if unplayed.empty:
+        raise ValueError("Every scheduled game has been played; nothing to forecast.")
+    return int(unplayed["season"].iloc[0]), int(unplayed["week"].iloc[0])
+
+
+def unstarted_week() -> tuple[int, int]:
+    """The season and week of the first week with no game played yet.
+
+    Raises:
+        ValueError: If every scheduled week has a played game (the offseason).
+    """
+    schedule = nflreadpy.load_schedules(seasons=True).to_pandas()
+    started = schedule.groupby(["season", "week"])["result"].transform("count") > 0
+    unstarted = schedule[~started].sort_values(["season", "week"])
+    if unstarted.empty:
+        raise ValueError("Every scheduled week has started; nothing to preview.")
+    return int(unstarted["season"].iloc[0]), int(unstarted["week"].iloc[0])
+
+
+def project_starters(games: pd.DataFrame) -> pd.DataFrame:
+    """Fill every side nfeloqb has not rated with its team's latest rated starter.
+
+    Args:
+        games: ``DataLoader.data``.
+
+    Returns:
+        A copy of ``games`` with every unrated side filled in.
+    """
+    columns = ["season", "week", "team", "qb_name", "qb_value"]
+    home = games[["season", "week", "home_team", "home_qb_name", "home_qb_value"]]
+    away = games[["season", "week", "away_team", "away_qb_name", "away_qb_value"]]
+    starts = pd.concat([home.set_axis(columns, axis=1), away.set_axis(columns, axis=1)])
+    latest = (
+        starts.dropna(subset=["qb_value"])
+        .sort_values(["season", "week"])
+        .drop_duplicates("team", keep="last")
+        .set_index("team")
+    )
+
+    games = games.copy()
+    for side in ("home", "away"):
+        unrated = games[f"{side}_qb_value"].isna()
+        team = games.loc[unrated, f"{side}_team"]
+        games.loc[unrated, f"{side}_qb_name"] = team.map(latest["qb_name"])
+        games.loc[unrated, f"{side}_qb_value"] = team.map(latest["qb_value"])
+    # Recompute the difference from the filled-in ratings, as DataLoader does.
+    games["qb_diff"] = (games["home_qb_value"] - games["away_qb_value"]).fillna(0.0)
+    return games
 
 
 class DataLoader:

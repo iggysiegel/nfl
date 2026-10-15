@@ -17,6 +17,7 @@ ruff check . && ruff format --check .     # lint, must pass
 python -m pytest -q                       # full suite (test_data hits the network)
 python -m pytest -q tests/test_model.py tests/test_predict.py   # offline
 python -m scripts.forecast
+python -m scripts.preview
 python -m scripts.backtest --start-season 2019 --end-season 2025
 ```
 
@@ -78,12 +79,13 @@ export them in the shell to run it locally.
 - nfeloqb's `team1` is the home team. Its `*_value_pre` ratings are pre-game by
   construction, so the walk-forward backtest is leak-free without extra machinery.
   An upcoming game it has not rated yet gets `qb_diff = 0`; a week with no ratings at
-  all stops `scripts.forecast`. It can rate a starter it cannot name, so check the
-  ratings, not the names.
+  all stops `scripts.forecast`. It rates the next week only after Monday night's game;
+  until then `scripts.preview` gives each unrated side its team's last rated starter.
+  It can rate a starter it cannot name, so check the ratings, not the names.
 - nflreadpy returns zero rows, not an error, for an unpublished season;
   `DataLoader` turns that into a `ValueError`. Its `get_current_season` is calendar
-  based and does not roll over until kickoff, so the forecast script finds the
-  upcoming week from the schedule instead (`upcoming_week`).
+  based and does not roll over until kickoff, so the scripts find their week from the
+  schedule instead (`current_week`, `unstarted_week`).
 
 ## Data and deployment
 
@@ -101,19 +103,21 @@ export them in the shell to run it locally.
 ## Code map
 
 - `python/nfl/data.py` — `DataLoader(start_season, end_season)` joins the schedule,
-  the opening line, and the quarterback ratings into one frame; `upcoming_week()`,
-  `previous_week()`.
+  the opening line, and the quarterback ratings into one frame; `previous_week()`,
+  `current_week()`, `unstarted_week()`, `project_starters()`.
 - `python/nfl/model.py` — prior constants and `StateSpaceModel`: `build`, `fit`,
   `save`, `load`. Saves keep only the prediction variables and the final week.
 - `python/nfl/predict.py` — `fit_week` (the one fit-and-forecast path every script
   uses), `predict_week` (pure numpy on the posterior; `q01` to `q99` grid), `score`.
-- `python/nfl/report.py` — `Formatter`: terminal table sorted by confidence.
+- `python/nfl/report.py` — `Formatter`: terminal table sorted by confidence, with a
+  margin breakdown under each game.
 - `python/nfl/paths.py` — `PREDICTIONS_DIR` and `MODELS_DIR`, each overridden by an
   environment variable of the same name, and `model_path` and `predictions_path` for
   a week's files. The web build reads `PREDICTIONS_DIR` too.
 - `python/scripts/` — `forecast.py` (forecasts the upcoming week and fills in last
   week's final scores, predicting from a saved model when one exists and fitting
-  otherwise; `--refit` forces a fit), `backtest.py`.
+  otherwise; `--refit` forces a fit), `preview.py` (forecasts next week before the
+  current one ends; prints only, saves nothing), `backtest.py`.
 - `web/build/` — reads the prediction CSVs and bakes the JSON the site ships.
   `insights.ts` (prompt), `injuries.ts` (ESPN), and `writeInsights.ts` (Tavily and
   the Gemini model list) write the AI insights.

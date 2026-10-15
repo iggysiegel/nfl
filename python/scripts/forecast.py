@@ -15,7 +15,7 @@ import argparse
 
 import pandas as pd
 
-from nfl.data import DataLoader, previous_week, upcoming_week
+from nfl.data import DataLoader, current_week, previous_week
 from nfl.model import StateSpaceModel
 from nfl.paths import MODELS_DIR, PREDICTIONS_DIR, model_path, predictions_path
 from nfl.predict import fit_week, predict_week
@@ -138,7 +138,7 @@ def main(argv: list[str] | None = None) -> None:
     """
     args = parse_args(argv)
     if args.season is None or args.week is None:
-        season, week = upcoming_week()
+        season, week = current_week()
     else:
         season, week = args.season, args.week
 

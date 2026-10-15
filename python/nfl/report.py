@@ -51,15 +51,39 @@ class Formatter:
         print("Spreads shown in market convention (negative = home favored).")
 
     def _print_game(self, row: pd.Series) -> None:
-        """Print one game's line of the report.
+        """Print one game's line, then its spread split into the model's three terms.
 
         Args:
             row: One game's prediction.
         """
-        matchup = f"{row['away_team']} @ {row['home_team']}"
+        home, away = row["home_team"], row["away_team"]
+        matchup = f"{away} @ {home}"
         market = f"{-row['spread_line']:+.1f}" if pd.notna(row["spread_line"]) else "-"
         model = f"{-row['pred_mean']:+.1f}"
         confidence = f"{row['confidence']:.0%}" if pd.notna(row["confidence"]) else "-"
         print(f"{matchup:<24}{market:>10}{model:>10}{confidence:>14}")
+
+        strength = self._edge(row["home_strength"] - row["away_strength"], home, away)
+        qb = self._edge(row["qb_effect"], home, away)
+        home_field = self._edge(row["home_field"], home, away)
+        away_qb, home_qb = row[["away_qb_name", "home_qb_name"]].fillna("unnamed")
+        starters = f"{away_qb} / {home_qb}"
+        print(f"    strength {strength} | QB {qb} ({starters}) | home {home_field}")
         if pd.isna(row["home_qb_value"]) or pd.isna(row["away_qb_value"]):
             print("    WARNING: no QB rating for this game; QB signal is zero.")
+
+    def _edge(self, edge: float, home: str, away: str) -> str:
+        """A home-minus-away term as the team it favors and by how much.
+
+        Args:
+            edge: The term in points, home minus away.
+            home: The home team.
+            away: The away team.
+
+        Returns:
+            For example ``"DEN 1.7"``, or ``"-"`` when it rounds to 0.0.
+        """
+        points = f"{abs(edge):.1f}"
+        if points == "0.0":
+            return "-"
+        return f"{home if edge > 0 else away} {points}"

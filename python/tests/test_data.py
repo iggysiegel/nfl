@@ -4,7 +4,7 @@ import nflreadpy
 import pandas as pd
 import pytest
 
-from nfl.data import FIRST_SEASON, DataLoader, previous_week
+from nfl.data import FIRST_SEASON, DataLoader, previous_week, project_starters
 
 # --- Test setup ---
 
@@ -47,6 +47,32 @@ def test_previous_week_crosses_into_last_season():
     games = pd.DataFrame({"season": [2025, 2025, 2026, 2026], "week": [21, 22, 1, 2]})
     assert previous_week(games, 2026, 1) == (2025, 22)
     assert previous_week(games, 2026, 2) == (2026, 1)
+
+
+def test_projection_fills_unrated_sides_with_each_teams_last_start():
+    # B hosts A in unrated week 3. A last started in week 2, away; B in week 1, away,
+    # then had a bye. Rated games feed the fit, so they must come back unchanged.
+    games = pd.DataFrame(
+        {
+            "season": 2026,
+            "week": [1, 2, 3],
+            "home_team": ["A", "C", "B"],
+            "away_team": ["B", "A", "A"],
+            "home_qb_name": ["Al", "Cy", None],
+            "away_qb_name": ["Bo", "Al", None],
+            "home_qb_value": [150.0, 130.0, None],
+            "away_qb_value": [120.0, 160.0, None],
+            "qb_diff": [30.0, -30.0, 0.0],
+        }
+    )
+
+    projected = project_starters(games)
+
+    pd.testing.assert_frame_equal(projected.iloc[:2], games.iloc[:2])
+    week3 = projected.iloc[2]
+    assert (week3["home_qb_name"], week3["home_qb_value"]) == ("Bo", 120.0)
+    assert (week3["away_qb_name"], week3["away_qb_value"]) == ("Al", 160.0)
+    assert week3["qb_diff"] == 120.0 - 160.0
 
 
 def test_unpublished_season_is_an_error():
