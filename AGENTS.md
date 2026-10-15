@@ -98,7 +98,10 @@ export them in the shell to run it locally.
   artifact, and then calls `deploy.yml`.
 - AI insights are never stored: each deploy regenerates them for games not yet
   kicked off, from repo secrets `LLM_API_KEY` and `TAVILY_API_KEY`. Any failure
-  ships the site without them.
+  ships the site without them and marks the insights step failed in the run.
+- Injuries come from ESPN's undocumented league-wide feed, matched to team codes by
+  the full names in `TEAM_NAMES`. The feed must list all 32 teams, so an empty or
+  renamed one stops the insights instead of reading as a healthy league.
 - The Gemini endpoint and models live in `writeInsights.ts`; the models are tried in
   order. When every one fails, the list is tried again after a five-minute wait, for
   three rounds in all.
@@ -120,8 +123,9 @@ export them in the shell to run it locally.
   week's final scores, predicting from a saved model when one exists and fitting
   otherwise; `--refit` forces a fit), `backtest.py`.
 - `web/build/` reads the prediction CSVs and bakes the JSON the site ships;
-  `insights.ts` and `writeInsights.ts` write the AI insights (one news search per
-  game, one OpenAI-compatible chat call for the slate); `web/src/` is the React app.
+  `insights.ts`, `injuries.ts`, and `writeInsights.ts` write the AI insights (one
+  ESPN injury fetch, one news search per game, one OpenAI-compatible chat call for
+  the slate); `web/src/` is the React app.
 - `predictions/` and `models/` are gitignored.
 
 ## References

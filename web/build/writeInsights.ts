@@ -9,6 +9,7 @@ import { writeFileSync } from 'node:fs';
 import OpenAI from 'openai';
 import type { SlateInsights } from '@/data/types';
 import { latestWeek, weekGames } from './aggregate';
+import { espnInjuries } from './injuries';
 import {
   type AskModel,
   generateInsights,
@@ -80,6 +81,7 @@ if (!LLM_API_KEY || !TAVILY_API_KEY) {
   const client = new OpenAI({ apiKey: LLM_API_KEY, baseURL: LLM_BASE_URL });
   const insights = await generateInsights(
     games,
+    espnInjuries,
     tavilySearch(TAVILY_API_KEY),
     withFallback(chatComplete(client), LLM_MODELS),
   );
@@ -89,4 +91,6 @@ if (!LLM_API_KEY || !TAVILY_API_KEY) {
     writeFileSync(INSIGHTS_PATH, `${JSON.stringify(slate)}\n`);
   }
   console.log(`insights: ${insights.length} of ${games.length} upcoming games`);
+  // Fail this step, not the deploy (it continues on error), so a skip shows in the run.
+  if (games.length > 0 && insights.length === 0) process.exitCode = 1;
 }

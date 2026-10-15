@@ -1,5 +1,6 @@
-/** Full names for the canonical franchise codes, for news search queries only. A bare
- *  code searches badly: "LA" matches both Los Angeles teams. */
+/** Full names for the canonical franchise codes. News searches use them, since a bare
+ *  code searches badly ("LA" matches both Los Angeles teams), and ESPN's injury feed
+ *  names teams exactly this way. */
 export const TEAM_NAMES: Record<string, string> = {
   ARI: 'Arizona Cardinals',
   ATL: 'Atlanta Falcons',
