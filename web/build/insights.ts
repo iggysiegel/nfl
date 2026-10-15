@@ -15,6 +15,14 @@ export type Search = (query: string) => Promise<string>;
 /** Sends a system and a user prompt to a chat model and returns its JSON reply. */
 export type Complete = (system: string, user: string) => Promise<string>;
 
+/** Like `Complete`, for the named model. */
+export type AskModel = (model: string, system: string, user: string) => Promise<string>;
+
+/** An overloaded model can return 503s for hours, longer than the client's own retries,
+ *  so the whole model list is tried again after a wait. */
+const MODEL_ROUNDS = 3;
+const ROUND_WAIT_MS = 5 * 60 * 1000;
+
 const NOTHING_NEW = 'No notable injuries or news beyond what the model already reflects.';
 
 const MAX_WORDS = 100;
@@ -118,6 +126,30 @@ function parseReply(reply: string, games: Prediction[]): GameInsight[] {
   return entries.filter((entry) =>
     games.some((game) => game.homeTeam === entry.homeTeam && game.awayTeam === entry.awayTeam),
   );
+}
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** Ask each model in turn until one answers, starting over after a wait.
+ *
+ * The news is searched before the first ask, so going round again spends no searches.
+ */
+export function withFallback(ask: AskModel, models: string[]): Complete {
+  return async (system, user) => {
+    for (let round = 1; round <= MODEL_ROUNDS; round++) {
+      if (round > 1) await sleep(ROUND_WAIT_MS);
+      for (const model of models) {
+        try {
+          const reply = await ask(model, system, user);
+          console.log(`insights: written by ${model}`);
+          return reply;
+        } catch (error) {
+          console.warn(`insights: ${model} failed in round ${round} of ${MODEL_ROUNDS}, ${error}`);
+        }
+      }
+    }
+    throw new Error(`no model answered in ${MODEL_ROUNDS} rounds`);
+  };
 }
 
 /** Search the news for each game and ask the model for the slate's insights.

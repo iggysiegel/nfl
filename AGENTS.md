@@ -32,8 +32,8 @@ npm run lint && npm run test
 npm run build:insights # AI insights; spends API calls, needs the keys below
 ```
 
-`build:insights` reads `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY`, and
-`TAVILY_API_KEY` from the environment; export them in the shell to run it locally.
+`build:insights` reads `LLM_API_KEY` and `TAVILY_API_KEY` from the environment;
+export them in the shell to run it locally.
 
 ## Rules
 
@@ -97,8 +97,11 @@ npm run build:insights # AI insights; spends API calls, needs the keys below
   `scripts.forecast` daily, carries the saved model from run to run as the `model`
   artifact, and then calls `deploy.yml`.
 - AI insights are never stored: each deploy regenerates them for games not yet
-  kicked off, from repo secrets `LLM_API_KEY` and `TAVILY_API_KEY` and variables
-  `LLM_BASE_URL` and `LLM_MODEL`. Any failure ships the site without them.
+  kicked off, from repo secrets `LLM_API_KEY` and `TAVILY_API_KEY`. Any failure
+  ships the site without them.
+- The Gemini endpoint and models live in `writeInsights.ts`; the models are tried in
+  order. When every one fails, the list is tried again after a five-minute wait, for
+  three rounds in all.
 
 ## Code map
 

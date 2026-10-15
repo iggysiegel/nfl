@@ -2,20 +2,30 @@
  *
  * Usage: npm run build:insights
  * The deploy runs it before `npm run build`; local builds never call it on their own.
- * Reads LLM_BASE_URL, LLM_MODEL, LLM_API_KEY and TAVILY_API_KEY. Without them, or when
- * nothing comes back, it writes nothing and the site ships without insights.
+ * Reads LLM_API_KEY and TAVILY_API_KEY. Without them, or when nothing comes back, it
+ * writes nothing and the site ships without insights.
  */
 import { writeFileSync } from 'node:fs';
 import OpenAI from 'openai';
 import type { SlateInsights } from '@/data/types';
 import { latestWeek, weekGames } from './aggregate';
-import { type Complete, generateInsights, INSIGHTS_SCHEMA, type Search, upcoming } from './insights';
+import {
+  type AskModel,
+  generateInsights,
+  INSIGHTS_SCHEMA,
+  type Search,
+  upcoming,
+  withFallback,
+} from './insights';
 import { INSIGHTS_PATH, PREDICTIONS_DIR } from './paths';
 import { readPredictions } from './readPredictions';
 
 const TAVILY_URL = 'https://api.tavily.com/search';
 const RESULTS_PER_GAME = 8;
-const LLM_MAX_RETRIES = 5;
+
+// Gemini's OpenAI-compatible endpoint. The models are tried in order; see withFallback.
+const LLM_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/';
+const LLM_MODELS = ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite'];
 
 interface TavilyResult {
   title: string;
@@ -39,8 +49,8 @@ function tavilySearch(apiKey: string): Search {
   };
 }
 
-function chatComplete(client: OpenAI, model: string): Complete {
-  return async (system, user) => {
+function chatComplete(client: OpenAI): AskModel {
+  return async (model, system, user) => {
     const completion = await client.chat.completions.create({
       model,
       messages: [
@@ -58,24 +68,20 @@ function chatComplete(client: OpenAI, model: string): Complete {
   };
 }
 
-const { LLM_BASE_URL, LLM_MODEL, LLM_API_KEY, TAVILY_API_KEY } = process.env;
+const { LLM_API_KEY, TAVILY_API_KEY } = process.env;
 
-if (!LLM_MODEL || !LLM_API_KEY || !TAVILY_API_KEY) {
-  console.log('insights: LLM_MODEL, LLM_API_KEY or TAVILY_API_KEY not set, skipping');
+if (!LLM_API_KEY || !TAVILY_API_KEY) {
+  console.log('insights: LLM_API_KEY or TAVILY_API_KEY not set, skipping');
 } else {
   const predictions = readPredictions(PREDICTIONS_DIR);
   const week = latestWeek(predictions);
   const games = upcoming(weekGames(predictions, week), new Date());
-  // An unset GitHub variable arrives as '', which the client would take as a URL.
-  const client = new OpenAI({
-    apiKey: LLM_API_KEY,
-    baseURL: LLM_BASE_URL || undefined,
-    maxRetries: LLM_MAX_RETRIES,
-  });
+  // The client retries each call twice on its own; withFallback covers longer outages.
+  const client = new OpenAI({ apiKey: LLM_API_KEY, baseURL: LLM_BASE_URL });
   const insights = await generateInsights(
     games,
     tavilySearch(TAVILY_API_KEY),
-    chatComplete(client, LLM_MODEL),
+    withFallback(chatComplete(client), LLM_MODELS),
   );
 
   if (insights.length > 0) {
