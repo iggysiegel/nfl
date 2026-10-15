@@ -14,6 +14,9 @@
   overflow: hidden;
 }
 .dialog::backdrop { background: var(--overlay) }
+/* Open, the sheet is a column: the header stays put and the body scrolls beneath it,
+   with its scrollbar in the body's padding rather than over the content. */
+.dialog[open] { display: flex; flex-direction: column }
 
 .header {
   display: flex;
@@ -24,4 +27,6 @@
   padding: var(--sp-3) var(--sp-4) var(--sp-3) var(--sp-6);
   border-bottom: var(--border-w) solid var(--border-hairline);
 }
-.body { padding: var(--sp-6); font: var(--type-body-sm) }
+/* Focused only so the dialog opens at the top; it is not a control, so no ring. */
+.title:focus-visible { box-shadow: none }
+.body { padding: var(--sp-6); font: var(--type-body-sm); overflow-y: auto }

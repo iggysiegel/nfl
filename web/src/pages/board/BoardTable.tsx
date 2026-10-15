@@ -25,6 +25,7 @@ export function BoardTable({ games, onOpen }: BoardTableProps) {
                 <span className={s.long}>Confidence</span>
                 <span className={s.short}>Conf</span>
               </th>
+              <th className={s.chevron} aria-hidden />
             </tr>
           </thead>
           <tbody>

@@ -13,6 +13,7 @@ interface DialogProps {
 
 export function Dialog({ open, title, onClose, width = 440, children }: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
   // Everything that dismisses the sheet goes through the element's own close(), so the
   // native close event below is the single place the parent is told.
   const dismiss = () => ref.current?.close();
@@ -20,7 +21,12 @@ export function Dialog({ open, title, onClose, width = 440, children }: DialogPr
   useEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
-    if (open && !dialog.open) dialog.showModal();
+    if (open && !dialog.open) {
+      dialog.showModal();
+      // Start at the title rather than the close button, which would otherwise open
+      // ringed as if selected. Tab still reaches the button.
+      titleRef.current?.focus();
+    }
     if (!open && dialog.open) dialog.close();
   }, [open]);
 
@@ -38,7 +44,9 @@ export function Dialog({ open, title, onClose, width = 440, children }: DialogPr
       }}
     >
       <header className={s.header}>
-        <h3>{title}</h3>
+        <h3 ref={titleRef} tabIndex={-1} className={s.title}>
+          {title}
+        </h3>
         <button type="button" aria-label="Close" className="icon-button" onClick={dismiss}>
           <X size={16} strokeWidth={1.75} aria-hidden />
         </button>
