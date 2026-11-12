@@ -4,6 +4,7 @@ channels:
 dependencies:
   - arviz
   - h5netcdf
+  - h5py
   - ipykernel
   - numpy
   - pandas
